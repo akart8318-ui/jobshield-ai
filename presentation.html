@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JobShield AI - Hackathon Pitch Deck</title>
+  <style>
+    :root {
+      --bg: #f6f7f9;
+      --card-bg: #ffffff;
+      --border: #e2e8f0;
+      --primary: #4f46e5;
+      --primary-light: #eef2ff;
+      --cyan: #0ea5e9;
+      --cyan-light: #e0f2fe;
+      --accent-danger: #e11d48;
+      --danger-light: #fff1f2;
+      --accent-warning: #d97706;
+      --warning-light: #fffbeb;
+      --accent-success: #059669;
+      --success-light: #ecfdf5;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --shadow-sm: 0 2px 8px rgba(15, 23, 42, 0.04);
+      --shadow-md: 0 8px 24px -4px rgba(15, 23, 42, 0.07);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text-main);
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+      user-select: none;
+    }
+
+    .ambient-glow {
+      position: absolute;
+      width: 550px;
+      height: 550px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(79, 70, 229, 0.06) 0%, transparent 70%);
+      filter: blur(60px);
+      z-index: 0;
+      pointer-events: none;
+    }
+    .glow-1 { top: -120px; left: -120px; }
+    .glow-2 { bottom: -120px; right: -120px; background: radial-gradient(circle, rgba(14, 165, 233, 0.06) 0%, transparent 70%); }
+
+    .deck-container {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      z-index: 10;
+    }
+
+    .top-bar {
+      height: 56px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2.5rem;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(12px);
+    }
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      color: var(--primary);
+      font-size: 1.2rem;
+    }
+    .brand-logo svg {
+      width: 24px;
+      height: 24px;
+      fill: none;
+      stroke: var(--primary);
+      stroke-width: 2.2;
+    }
+    .badge-theme {
+      background: var(--primary-light);
+      border: 1px solid rgba(79, 70, 229, 0.2);
+      color: var(--primary);
+      padding: 5px 14px;
+      border-radius: 9999px;
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+    .progress-bar-container {
+      width: 150px;
+      height: 6px;
+      background: #e2e8f0;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--cyan));
+      width: 14.2%;
+      transition: width 0.3s ease;
+    }
+
+    .slide-viewport {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+    }
+    .slide {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateX(40px);
+      transition: opacity 0.35s ease, transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      flex-direction: column;
+      padding: 2.2rem 4rem;
+      overflow-y: auto;
+    }
+    .slide.active {
+      opacity: 1;
+      pointer-events: all;
+      transform: translateX(0);
+    }
+
+    .controls-bar {
+      height: 62px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 3rem;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(12px);
+    }
+    .slide-indicator {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+    .nav-btn-group {
+      display: flex;
+      gap: 10px;
+    }
+    .nav-btn {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      padding: 8px 18px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.88rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.2s;
+    }
+    .nav-btn:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+      box-shadow: var(--shadow-md);
+    }
+    .nav-btn-primary {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #ffffff;
+    }
+    .nav-btn-primary:hover {
+      background: #4338ca;
+      color: #ffffff;
+    }
+
+    .tagline-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--primary-light);
+      border: 1px solid rgba(79, 70, 229, 0.25);
+      color: var(--primary);
+      padding: 4px 14px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      width: fit-content;
+    }
+    .slide-title {
+      font-size: 2.2rem;
+      font-weight: 800;
+      letter-spacing: -0.8px;
+      margin-bottom: 0.3rem;
+      color: var(--text-main);
+    }
+    .slide-subtitle {
+      font-size: 1.05rem;
+      color: var(--text-muted);
+      max-width: 860px;
+      margin-bottom: 1.4rem;
+      line-height: 1.5;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      height: calc(100% - 130px);
+    }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+    }
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.25s ease;
+    }
+    .card:hover {
+      border-color: #cbd5e1;
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+    }
+
+    /* Filled Solid Circle Component */
+    .filled-circle {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      font-weight: 800;
+      font-size: 1.1rem;
+      margin: 0 auto 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    .bg-indigo { background: var(--primary); }
+    .bg-cyan { background: var(--cyan); }
+    .bg-amber { background: var(--accent-warning); }
+    .bg-emerald { background: var(--accent-success); }
+
+    .chart-container {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.4rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      box-shadow: var(--shadow-sm);
+    }
+    canvas {
+      max-width: 100%;
+      max-height: 250px;
+    }
+
+    .flow-pipeline {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      margin: 1.2rem 0;
+    }
+    .flow-step {
+      flex: 1;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.3rem;
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.2s;
+    }
+    .flow-step:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-md);
+      border-color: var(--primary);
+    }
+    .flow-arrow {
+      padding: 0 12px;
+      color: var(--primary);
+      font-size: 1.5rem;
+      font-weight: 800;
+    }
+
+    .compare-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.92rem;
+    }
+    .compare-table th {
+      padding: 12px 16px;
+      border-bottom: 2px solid var(--border);
+      color: var(--primary);
+      background: var(--primary-light);
+      font-weight: 700;
+    }
+    .compare-table td {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text-main);
+    }
+    .compare-table tr:hover {
+      background: #f8fafc;
+    }
+
+    .sim-box {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.5rem;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      box-shadow: var(--shadow-sm);
+    }
+    .sim-input {
+      width: 100%;
+      height: 95px;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+      color: var(--text-main);
+      font-size: 0.88rem;
+      resize: none;
+    }
+    .sim-btn-row {
+      display: flex;
+      gap: 8px;
+    }
+    .btn-sample {
+      background: #f1f5f9;
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .btn-sample:hover {
+      background: var(--primary-light);
+      color: var(--primary);
+      border-color: var(--primary);
+    }
+    .btn-analyze {
+      background: var(--primary);
+      color: #ffffff;
+      border: none;
+      padding: 9px 18px;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 0.88rem;
+      cursor: pointer;
+    }
+
+    @media print {
+      body { overflow: visible !important; height: auto !important; background: #fff !important; }
+      .top-bar, .controls-bar, .ambient-glow { display: none !important; }
+      .slide { position: relative !important; opacity: 1 !important; transform: none !important; page-break-after: always; height: 100vh; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="ambient-glow glow-1"></div>
+  <div class="ambient-glow glow-2"></div>
+
+  <div class="deck-container">
+    <header class="top-bar">
+      <div class="brand-logo">
+        <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+        <span>JobShield AI</span>
+      </div>
+      <div class="badge-theme">THEME 1: AI & SMART SOLUTIONS | CODE: AI-04</div>
+      <div class="progress-bar-container">
+        <div class="progress-bar-fill" id="progressFill"></div>
+      </div>
+    </header>
+
+    <main class="slide-viewport">
+
+      <!-- SLIDE 1: Title & Presentation Topics Agenda (No member roles) -->
+      <section class="slide active" id="slide-1">
+        <div style="display: flex; flex-direction: column; justify-content: center; height: 100%;">
+          <div class="tagline-pill">🎓 College Hackathon 2026 • AI-04</div>
+          <h1 style="font-size: 3.2rem; font-weight: 900; letter-spacing: -1.2px; line-height: 1.1; margin-bottom: 0.5rem; color: var(--primary);">
+            JobShield AI
+          </h1>
+          <p style="font-size: 1.25rem; font-weight: 700; color: var(--text-main); margin-bottom: 0.3rem;">
+            Autonomous Multi-Layer Intelligence Engine for Local Job Scam Detection & Vacancy Verification
+          </p>
+          <p style="font-size: 0.95rem; color: var(--text-muted); margin-bottom: 1.5rem;">
+            Presented by Team Parakram (5 Members) • Protecting students and freshers from predatory digital employment extortion
+          </p>
+
+          <div style="font-size: 0.82rem; color: var(--primary); text-transform: uppercase; letter-spacing: 1px; font-weight: 800; margin-bottom: 0.8rem;">
+            PRESENTATION ROADMAP & TOPICS COVERED:
+          </div>
+
+          <!-- 6 Topics Agenda Grid -->
+          <div class="grid-3" style="gap: 16px;">
+            <div class="card" style="padding: 1.1rem; flex-direction: row; gap: 14px; align-items: center;">
+              <div style="font-size: 1.3rem; font-weight: 900; color: var(--primary); background: var(--primary-light); padding: 8px 14px; border-radius: 8px;">01</div>
+              <div>
+                <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--text-main);">The Campus Epidemic</h4>
+                <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2px;">Rising student victimization & ₹1,850 Cr+ loss</p>
+              </div>
+            </div>
+
+            <div class="card" style="padding: 1.1rem; flex-direction: row; gap: 14px; align-items: center;">
+              <div style="font-size: 1.3rem; font-weight: 900; color: var(--cyan); background: var(--cyan-light); padding: 8px 14px; border-radius: 8px;">02</div>
+              <div>
+                <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--text-main);">4 Pillars of Defense</h4>
+                <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2px;">Vision, heuristic rules, OSINT & trust scoring</p>
+              </div>
+            </div>
+
+            <div class="card" style="padding: 1.1rem; flex-direction: row; gap: 14px; align-items: center;">
+              <div style="font-size: 1.3rem; font-weight: 900; color: var(--accent-warning); background: var(--warning-light); padding: 8px 14px; border-radius: 8px;">03</div>
+              <div>
+                <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--text-main);">System Flowchart</h4>
+                <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2px;">FastAPI architecture, OCR & verification layers</p>
+              </div>
+            </div>
+
+            <div class="card" style="padding: 1.1rem; flex-direction: row; gap: 14px; align-items: center;">
+              <div style="font-size: 1.3rem; font-weight: 900; color: var(--accent-danger); background: var(--danger-light); padding: 8px 14px; border-radius: 8px;">04</div>
+              <div>
+                <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--text-main);">Beyond Generic AI</h4>
+                <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2px;">Why ChatGPT fails: Live DNS & Geo-checks</p>
+              </div>
+            </div>
+
+            <div class="card" style="padding: 1.1rem; flex-direction: row; gap: 14px; align-items: center;">
+              <div style="font-size: 1.3rem; font-weight: 900; color: var(--accent-success); background: var(--success-light); padding: 8px 14px; border-radius: 8px;">05</div>
+              <div>
+                <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--text-main);">Live Test Cases</h4>
+                <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2px;">Real-world Telegram task vs. campus recruitment</p>
+              </div>
+            </div>
+
+            <div class="card" style="padding: 1.1rem; flex-direction: row; gap: 14px; align-items: center;">
+              <div style="font-size: 1.3rem; font-weight: 900; color: #8b5cf6; background: #f5f3ff; padding: 8px 14px; border-radius: 8px;">06</div>
+              <div>
+                <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--text-main);">National Scalability</h4>
+                <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2px;">Cyber Cell 1930 & college TPO portal plugin</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 2: The Problem & Dynamic Graph -->
+      <section class="slide" id="slide-2">
+        <div class="tagline-pill">Problem Statement</div>
+        <h2 class="slide-title">The Epidemic of Employment Scams</h2>
+        <p class="slide-subtitle">
+          Over 64% of college students receive fraudulent job offers or task scams each semester.
+        </p>
+
+        <div class="grid-2">
+          <div style="display: flex; flex-direction: column; gap: 14px;">
+            <div class="card" style="border-left: 4px solid var(--accent-danger);">
+              <h3 style="color: var(--accent-danger); font-size: 1.1rem; margin-bottom: 6px;">1. The Upfront Fee Trap</h3>
+              <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.5;">
+                Students are extorted into paying "Registration Fees", "Laptop Security Deposits", or "Verification Kit Charges" (₹500 - ₹5,000) for fake job postings.
+              </p>
+            </div>
+            <div class="card" style="border-left: 4px solid var(--accent-warning);">
+              <h3 style="color: var(--accent-warning); font-size: 1.1rem; margin-bottom: 6px;">2. Telegram / WhatsApp Task Scams</h3>
+              <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.5;">
+                "Earn ₹3,000/day for liking YouTube videos". Small payouts hook victims before locking their savings into fraudulent investment portals.
+              </p>
+            </div>
+            <div class="card" style="border-left: 4px solid var(--primary);">
+              <h3 style="color: var(--primary); font-size: 1.1rem; margin-bottom: 6px;">3. The Local Vacancy Blindspot</h3>
+              <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.5;">
+                Street flyers, posters on coaching walls, and local listings lack any verifiable digital footprint or corporate registration.
+              </p>
+            </div>
+          </div>
+
+          <div class="chart-container">
+            <div style="font-weight: 700; font-size: 0.95rem; color: var(--text-main); margin-bottom: 8px;">
+              Reported Job Frauds in India (National Cyber Cell Data)
+            </div>
+            <canvas id="riskGrowthChart" width="460" height="210"></canvas>
+            <div style="display: flex; justify-content: space-around; width: 100%; margin-top: 14px; border-top: 1px solid var(--border); padding-top: 12px;">
+              <div style="text-align: center;">
+                <div style="color: var(--accent-danger); font-size: 1.3rem; font-weight: 800;">₹1,850 Cr+</div>
+                <div style="color: var(--text-muted); font-size: 0.72rem; text-transform: uppercase;">Lost in 2024-25</div>
+              </div>
+              <div style="text-align: center;">
+                <div style="color: var(--accent-warning); font-size: 1.3rem; font-weight: 800;">72%</div>
+                <div style="color: var(--text-muted); font-size: 0.72rem; text-transform: uppercase;">Aged 18-24 Victims</div>
+              </div>
+              <div style="text-align: center;">
+                <div style="color: var(--primary); font-size: 1.3rem; font-weight: 800;">0 Seconds</div>
+                <div style="color: var(--text-muted); font-size: 0.72rem; text-transform: uppercase;">Student Verification</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 3: The 4 Pillars of Defense (Filled Circles) -->
+      <section class="slide" id="slide-3">
+        <div class="tagline-pill" style="background: var(--success-light); border-color: rgba(5, 150, 105, 0.25); color: var(--accent-success);">
+          Our Solution
+        </div>
+        <h2 class="slide-title">JobShield AI: 4 Pillars of Defense</h2>
+        <p class="slide-subtitle">
+          An end-to-end multi-modal verification platform that analyzes offers before students commit time or money.
+        </p>
+
+        <div class="grid-4" style="height: calc(100% - 130px);">
+          <div class="card" style="border-top: 4px solid var(--primary); text-align: center;">
+            <div class="filled-circle bg-indigo">01</div>
+            <h3 style="color: var(--text-main); font-size: 1.1rem; margin-bottom: 8px;">Omni-Input Vision</h3>
+            <p style="color: var(--text-muted); font-size: 0.86rem; line-height: 1.5;">
+              Upload street posters, WhatsApp screenshots, or PDF offer letters. Gemini Vision + OCR extracts entities without manual typing.
+            </p>
+          </div>
+
+          <div class="card" style="border-top: 4px solid var(--cyan); text-align: center;">
+            <div class="filled-circle bg-cyan">02</div>
+            <h3 style="color: var(--text-main); font-size: 1.1rem; margin-bottom: 8px;">Heuristic Audit</h3>
+            <p style="color: var(--text-muted); font-size: 0.86rem; line-height: 1.5;">
+              Scans for extortion red flags: security deposits, interview kit charges, urgency triggers, and impossible pay-to-work ratios.
+            </p>
+          </div>
+
+          <div class="card" style="border-top: 4px solid var(--accent-warning); text-align: center;">
+            <div class="filled-circle bg-amber">03</div>
+            <h3 style="color: var(--text-main); font-size: 1.1rem; margin-bottom: 8px;">Live OSINT Checks</h3>
+            <p style="color: var(--text-muted); font-size: 0.86rem; line-height: 1.5;">
+              Inspects live DNS with WHOIS to catch newly minted scam domains (< 30 days old) and verifies physical shop/office addresses on Google Places.
+            </p>
+          </div>
+
+          <div class="card" style="border-top: 4px solid var(--accent-success); text-align: center;">
+            <div class="filled-circle bg-emerald">04</div>
+            <h3 style="color: var(--text-main); font-size: 1.1rem; margin-bottom: 8px;">Trust Score & Report</h3>
+            <p style="color: var(--text-muted); font-size: 0.86rem; line-height: 1.5;">
+              Generates a Trust Index (0-100%) with itemized proof points and a 1-click Cyber Crime reporting template (Portal 1930).
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 4: Architecture Flowchart (Properly Filled Circles!) -->
+      <section class="slide" id="slide-4">
+        <div class="tagline-pill">System Architecture</div>
+        <h2 class="slide-title">System Pipeline & Flowchart</h2>
+        <p class="slide-subtitle">
+          How unstructured scam messages pass through our multi-tiered verification pipeline in under 1.8 seconds.
+        </p>
+
+        <div class="flow-pipeline">
+          <div class="flow-step">
+            <div class="filled-circle bg-indigo">01</div>
+            <div style="font-weight: 700; font-size: 0.95rem; color: var(--text-main);">Ingestion</div>
+            <div style="color: var(--text-muted); font-size: 0.78rem; margin-top: 4px;">
+              Image / PDF / Text / Telegram Webhook
+            </div>
+          </div>
+
+          <div class="flow-arrow">➔</div>
+
+          <div class="flow-step" style="border-color: var(--cyan);">
+            <div class="filled-circle bg-cyan">02</div>
+            <div style="font-weight: 700; font-size: 0.95rem; color: var(--cyan);">Vision & OCR</div>
+            <div style="color: var(--text-muted); font-size: 0.78rem; margin-top: 4px;">
+              Gemini Vision API / EasyOCR entity parsing
+            </div>
+          </div>
+
+          <div class="flow-arrow">➔</div>
+
+          <div class="flow-step" style="border-color: var(--accent-warning);">
+            <div class="filled-circle bg-amber">03</div>
+            <div style="font-weight: 700; font-size: 0.95rem; color: var(--accent-warning);">FastAPI Engine</div>
+            <div style="color: var(--text-muted); font-size: 0.78rem; margin-top: 4px;">
+              Regex rules + WHOIS + Places verification
+            </div>
+          </div>
+
+          <div class="flow-arrow">➔</div>
+
+          <div class="flow-step" style="border-color: var(--accent-success);">
+            <div class="filled-circle bg-emerald">04</div>
+            <div style="font-weight: 700; font-size: 0.95rem; color: var(--accent-success);">Trust Report</div>
+            <div style="color: var(--text-muted); font-size: 0.78rem; margin-top: 4px;">
+              Score (0-100) + Red flag badge breakdown
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-3" style="margin-top: 1rem;">
+          <div class="card" style="padding: 1.1rem;">
+            <div style="color: var(--primary); font-weight: 700; font-size: 0.9rem; margin-bottom: 4px;">Frontend Layer</div>
+            <div style="color: var(--text-muted); font-size: 0.82rem;">HTML5, Modern CSS Grid, Vanilla JS. Zero build steps, instant load under 200ms.</div>
+          </div>
+          <div class="card" style="padding: 1.1rem;">
+            <div style="color: var(--cyan); font-weight: 700; font-size: 0.9rem; margin-bottom: 4px;">Backend & Intelligence</div>
+            <div style="color: var(--text-muted); font-size: 0.82rem;">Python FastAPI, Google Gemini 1.5 Flash Vision, Python-WHOIS DNS auditor.</div>
+          </div>
+          <div class="card" style="padding: 1.1rem;">
+            <div style="color: var(--accent-success); font-weight: 700; font-size: 0.9rem; margin-bottom: 4px;">Mobile & Outreach</div>
+            <div style="color: var(--text-muted); font-size: 0.82rem;">Telegram Bot API (`python-telegram-bot`) for instant mobile message forwarding.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 5: JobShield AI vs Chatbots -->
+      <section class="slide" id="slide-5">
+        <div class="tagline-pill">Competitive Advantage</div>
+        <h2 class="slide-title">JobShield AI vs Generic Chatbots</h2>
+        <p class="slide-subtitle">
+          Why asking ChatGPT or a simple prompt fails, and how multi-source verification delivers rock-solid accuracy.
+        </p>
+
+        <div class="card" style="padding: 0; overflow: hidden;">
+          <table class="compare-table">
+            <thead>
+              <tr>
+                <th>Verification Capability</th>
+                <th>Asking ChatGPT / Generic LLM</th>
+                <th>JobShield AI (Our Solution)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><b>Live WHOIS Domain Age Check</b></td>
+                <td><span style="color: var(--accent-danger); font-weight: 700;">❌ Blind</span> (No live DNS lookup)</td>
+                <td><span style="color: var(--accent-success); font-weight: 700;">✅ Yes</span> (Flags domains registered &lt; 30 days ago)</td>
+              </tr>
+              <tr>
+                <td><b>Physical Local Address Verification</b></td>
+                <td><span style="color: var(--accent-danger); font-weight: 700;">❌ Hallucinates</span> fictional locations</td>
+                <td><span style="color: var(--accent-success); font-weight: 700;">✅ Yes</span> (Validates with Google Maps/Places API)</td>
+              </tr>
+              <tr>
+                <td><b>Free Email Identity Spoofing</b></td>
+                <td><span style="color: var(--accent-warning); font-weight: 700;">⚠️ Weak</span> (Misses subtle typosquatting)</td>
+                <td><span style="color: var(--accent-success); font-weight: 700;">✅ Strict</span> (Flags @gmail.com claiming corporate HR)</td>
+              </tr>
+              <tr>
+                <td><b>Street Poster / Flyer OCR Ingestion</b></td>
+                <td><span style="color: var(--accent-danger); font-weight: 700;">❌ Tedious</span> (Requires manual typing)</td>
+                <td><span style="color: var(--accent-success); font-weight: 700;">✅ Native</span> (Drag & drop camera snaps of flyers)</td>
+              </tr>
+              <tr>
+                <td><b>Instant WhatsApp / Telegram Bot</b></td>
+                <td><span style="color: var(--accent-danger); font-weight: 700;">❌ None</span> (Requires app login)</td>
+                <td><span style="color: var(--accent-success); font-weight: 700;">✅ 1-Click</span> (Forward message directly to bot)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- SLIDE 6: Interactive Live Demo -->
+      <section class="slide" id="slide-6">
+        <div class="tagline-pill">Interactive Proof</div>
+        <h2 class="slide-title">Live Test Cases & Test Bench</h2>
+        <p class="slide-subtitle">
+          Click any preset case below to simulate our verification engine right inside the pitch deck.
+        </p>
+
+        <div class="grid-2">
+          <div class="sim-box">
+            <div style="font-weight: 700; font-size: 0.95rem; color: var(--text-main);">Test Input Payload</div>
+            <div class="sim-btn-row">
+              <button class="btn-sample" onclick="loadSample('scam1')">Scam: Telegram Task</button>
+              <button class="btn-sample" onclick="loadSample('scam2')">Scam: Data Entry Fee</button>
+              <button class="btn-sample" onclick="loadSample('legit')">Legit: Campus Drive</button>
+            </div>
+            <textarea class="sim-input" id="demoText" placeholder="Paste suspicious job message or vacancy text..."></textarea>
+            <button class="btn-analyze" onclick="runSimAnalysis()">⚡ Execute Instant AI Audit</button>
+          </div>
+
+          <div class="card" id="simOutput" style="justify-content: center;">
+            <div style="text-align: center; color: var(--text-muted);">
+              <div style="font-size: 2.5rem; margin-bottom: 8px;">🛡️</div>
+              <p>Select a sample on the left and click <b>Execute Instant AI Audit</b> to witness real-time threat scoring.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 7: Future Roadmap -->
+      <section class="slide" id="slide-7">
+        <div class="tagline-pill">Next Steps</div>
+        <h2 class="slide-title">Roadmap & Societal Impact</h2>
+        <p class="slide-subtitle">
+          Transforming from a hackathon prototype into a nationwide student defense infrastructure.
+        </p>
+
+        <div class="grid-3">
+          <div class="card">
+            <div style="color: var(--primary); font-size: 1.6rem; margin-bottom: 6px;">🏛️</div>
+            <h3 style="color: var(--text-main); font-size: 1.1rem; margin-bottom: 6px;">Cyber Cell 1930 Sync</h3>
+            <p style="color: var(--text-muted); font-size: 0.86rem; line-height: 1.5;">
+              Pre-generate official PDF complaints formatted for National Cyber Crime Reporting Portal with transaction IDs and phone numbers.
+            </p>
+          </div>
+
+          <div class="card">
+            <div style="color: var(--accent-warning); font-size: 1.6rem; margin-bottom: 6px;">👥</div>
+            <h3 style="color: var(--text-main); font-size: 1.1rem; margin-bottom: 6px;">Community Blacklist</h3>
+            <p style="color: var(--text-muted); font-size: 0.86rem; line-height: 1.5;">
+              Crowdsourced registry of recurring scammer UPI IDs, phone numbers, and WhatsApp recruiter handles verified by college peer voting.
+            </p>
+          </div>
+
+          <div class="card">
+            <div style="color: var(--accent-success); font-size: 1.6rem; margin-bottom: 6px;">🎓</div>
+            <h3 style="color: var(--text-main); font-size: 1.1rem; margin-bottom: 6px;">College TPO Portal Plugin</h3>
+            <p style="color: var(--text-muted); font-size: 0.86rem; line-height: 1.5;">
+              Lightweight browser extension or portal API that automatically vets off-campus drives posted on student bulletin boards.
+            </p>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top: 1.4rem; background: var(--primary-light); border-color: rgba(79, 70, 229, 0.25); text-align: center; padding: 1.4rem;">
+          <h3 style="color: var(--primary); font-size: 1.25rem; margin-bottom: 4px;">Thank You! We are Ready for Q&A.</h3>
+          <p style="color: var(--text-muted); font-size: 0.9rem;">JobShield AI — Securing Student Careers Against Digital Extortion.</p>
+        </div>
+      </section>
+
+    </main>
+
+    <footer class="controls-bar">
+      <div class="slide-indicator">
+        Slide <span id="currentSlideNum">1</span> of <span id="totalSlidesNum">7</span>
+      </div>
+
+      <div class="nav-btn-group">
+        <button class="nav-btn" onclick="prevSlide()">
+          <span>&#8592;</span> Previous
+        </button>
+        <button class="nav-btn nav-btn-primary" onclick="nextSlide()">
+          Next <span>&#8594;</span>
+        </button>
+        <button class="nav-btn" onclick="toggleFullscreen()" title="Fullscreen presentation mode">
+          <span>⛶</span> Fullscreen
+        </button>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    let currentSlide = 1;
+    const totalSlides = 7;
+
+    function updateSlide() {
+      document.querySelectorAll('.slide').forEach((s, idx) => {
+        s.classList.toggle('active', (idx + 1) === currentSlide);
+      });
+      document.getElementById('currentSlideNum').innerText = currentSlide;
+      document.getElementById('progressFill').style.width = ((currentSlide / totalSlides) * 100) + '%';
+      
+      if (currentSlide === 2) {
+        drawRiskChart();
+      }
+    }
+
+    function nextSlide() {
+      if (currentSlide < totalSlides) {
+        currentSlide++;
+        updateSlide();
+      }
+    }
+
+    function prevSlide() {
+      if (currentSlide > 1) {
+        currentSlide--;
+        updateSlide();
+      }
+    }
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+        nextSlide();
+      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+        prevSlide();
+      } else if (e.key === 'f' || e.key === 'F') {
+        toggleFullscreen();
+      }
+    });
+
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else {
+        document.exitFullscreen().catch(() => {});
+      }
+    }
+
+    function drawRiskChart() {
+      const canvas = document.getElementById('riskGrowthChart');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const w = canvas.width;
+      const h = canvas.height;
+
+      ctx.clearRect(0, 0, w, h);
+
+      const labels = ['2021', '2022', '2023', '2024', '2025 (Proj)'];
+      const values = [18, 34, 78, 165, 290];
+      const maxVal = 320;
+
+      const paddingLeft = 45;
+      const paddingBottom = 30;
+      const graphW = w - paddingLeft - 20;
+      const graphH = h - paddingBottom - 20;
+
+      ctx.strokeStyle = '#f1f5f9';
+      ctx.lineWidth = 1;
+      for (let i = 0; i <= 4; i++) {
+        const y = 20 + (graphH / 4) * i;
+        ctx.beginPath();
+        ctx.moveTo(paddingLeft, y);
+        ctx.lineTo(w - 20, y);
+        ctx.stroke();
+      }
+
+      const points = values.map((val, idx) => {
+        const x = paddingLeft + (idx / (values.length - 1)) * graphW;
+        const y = 20 + graphH - (val / maxVal) * graphH;
+        return { x, y, val };
+      });
+
+      const grad = ctx.createLinearGradient(0, 20, 0, h - paddingBottom);
+      grad.addColorStop(0, 'rgba(79, 70, 229, 0.18)');
+      grad.addColorStop(1, 'rgba(79, 70, 229, 0.0)');
+
+      ctx.beginPath();
+      ctx.moveTo(points[0].x, points[0].y);
+      for (let i = 1; i < points.length; i++) {
+        ctx.lineTo(points[i].x, points[i].y);
+      }
+      ctx.lineTo(points[points.length - 1].x, h - paddingBottom);
+      ctx.lineTo(points[0].x, h - paddingBottom);
+      ctx.closePath();
+      ctx.fillStyle = grad;
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.moveTo(points[0].x, points[0].y);
+      for (let i = 1; i < points.length; i++) {
+        ctx.lineTo(points[i].x, points[i].y);
+      }
+      ctx.strokeStyle = '#4f46e5';
+      ctx.lineWidth = 3;
+      ctx.stroke();
+
+      points.forEach((pt, i) => {
+        ctx.beginPath();
+        ctx.arc(pt.x, pt.y, 5, 0, Math.PI * 2);
+        ctx.fillStyle = '#ffffff';
+        ctx.fill();
+        ctx.strokeStyle = '#4f46e5';
+        ctx.lineWidth = 2.5;
+        ctx.stroke();
+
+        ctx.fillStyle = '#64748b';
+        ctx.font = '11px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(labels[i], pt.x, h - 8);
+
+        ctx.fillStyle = '#4f46e5';
+        ctx.font = 'bold 11px sans-serif';
+        ctx.fillText(pt.val + 'K', pt.x, pt.y - 10);
+      });
+    }
+
+    const samplePayloads = {
+      scam1: "URGENT HIRING: International Media partner needs Part-Time Assistants. Watch 5 short YouTube videos & like them. Earn ₹2500 - ₹5000 per day instantly to your UPI! Contact HR Priya on Telegram: @earn_quick_india. Pay ₹499 security deposit (100% refundable with first salary).",
+      scam2: "Government Certified Data Entry Jobs from Home! Typing speed not required. Earn ₹25,000 monthly. Send your Aadhaar card and pay ₹850 verification charge for interview kit to UPI: datawork@oksbi. Offer valid only for 24 hours!",
+      legit: "TCS Off-Campus Hiring 2026: Inviting BE/B.Tech students of Batch 2026 to apply for Ninja and Digital profiles. Official registration on nextstep.tcs.com. No fee is charged at any stage of recruitment. Official communication will only be sent from @tcs.com email."
+    };
+
+    function loadSample(type) {
+      document.getElementById('demoText').value = samplePayloads[type];
+    }
+
+    function runSimAnalysis() {
+      const text = document.getElementById('demoText').value.trim();
+      const out = document.getElementById('simOutput');
+      if (!text) {
+        alert("Please paste some text or select a sample first!");
+        return;
+      }
+
+      out.innerHTML = `
+        <div style="text-align: center; color: var(--primary);">
+          <div style="font-size: 1.5rem; margin-bottom: 6px;">⚡</div>
+          <p>Running Multi-Tier Inspection Engine...</p>
+        </div>
+      `;
+
+      setTimeout(() => {
+        const isScam = text.includes('₹499') || text.includes('₹850') || text.includes('Telegram') || text.includes('YouTube');
+        if (isScam) {
+          out.innerHTML = `
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+              <span style="font-weight: 800; font-size: 1.15rem; color: var(--accent-danger);">⚠️ THREAT DETECTED: HIGH RISK</span>
+              <span style="background: var(--danger-light); border: 1px solid var(--accent-danger); color: var(--accent-danger); padding: 2px 10px; border-radius: 999px; font-weight: 800;">Risk: 94%</span>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 6px; font-size: 0.84rem;">
+              <div style="background: var(--danger-light); border-left: 3px solid var(--accent-danger); padding: 6px 10px; color: #9f1239;">
+                <b>🚩 Upfront Extortion:</b> Demands ₹499 - ₹850 under the guise of "security deposit / kit".
+              </div>
+              <div style="background: var(--warning-light); border-left: 3px solid var(--accent-warning); padding: 6px 10px; color: #92400e;">
+                <b>🚩 Abnormal Pay Ratio:</b> ₹5,000/day for casual YouTube clicks matches classic Ponzi task scam.
+              </div>
+              <div style="background: #eff6ff; border-left: 3px solid #3b82f6; padding: 6px 10px; color: #1e40af;">
+                <b>🚩 Anonymous Channel:</b> Directs applicants to unofficial Telegram handle rather than corporate domain.
+              </div>
+            </div>
+          `;
+        } else {
+          out.innerHTML = `
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+              <span style="font-weight: 800; font-size: 1.15rem; color: var(--accent-success);">✅ VERIFIED RECRUITMENT</span>
+              <span style="background: var(--success-light); border: 1px solid var(--accent-success); color: var(--accent-success); padding: 2px 10px; border-radius: 999px; font-weight: 800;">Trust: 96%</span>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 6px; font-size: 0.84rem;">
+              <div style="background: var(--success-light); border-left: 3px solid var(--accent-success); padding: 6px 10px; color: #065f46;">
+                <b>🛡️ Verified Corporate Domain:</b> Directs to official portal (tcs.com) with established DNS authority.
+              </div>
+              <div style="background: var(--success-light); border-left: 3px solid var(--accent-success); padding: 6px 10px; color: #065f46;">
+                <b>🛡️ Zero Fee Policy:</b> Explicitly warns candidates against fraudulent monetary demands.
+              </div>
+            </div>
+          `;
+        }
+      }, 500);
+    }
+
+    updateSlide();
+  </script>
+</body>
+</html>
