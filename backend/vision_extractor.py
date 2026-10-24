@@ -58,7 +58,7 @@ class VisionExtractor:
             except Exception as e:
                 print(f"[VisionExtractor] Gemini REST call exception: {e}")
 
-            # 2. Attempt google-generativeai package if installed
+            # 2. Attempt the "google-generativeai" package if installed
             try:
                 import google.generativeai as genai
                 genai.configure(api_key=api_key)
