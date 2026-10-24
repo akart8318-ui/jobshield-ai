@@ -4,7 +4,18 @@
  * animated trust gauge visualization, and 1-click Cyber Crime reporting.
  */
 
-const API_BASE = "http://127.0.0.1:8000/api";
+function getApiBase() {
+  if (typeof window !== 'undefined' && window.location && window.location.protocol.startsWith('http')) {
+    if ((window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && 
+        window.location.port !== '8000' && window.location.port !== '') {
+      return `http://${window.location.hostname}:8000/api`;
+    }
+    return `${window.location.origin}/api`;
+  }
+  return "http://127.0.0.1:8000/api";
+}
+
+const API_BASE = getApiBase();
 let currentPoliceDossier = "";
 let selectedFile = null;
 

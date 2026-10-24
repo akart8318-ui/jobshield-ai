@@ -133,9 +133,45 @@ function animateCounters() {
   });
 }
 
+// ==========================================
+// 4. API GATEWAY HEALTH PROBE
+// ==========================================
+async function checkApiGateway() {
+  const el = document.getElementById('apiGatewayStatus');
+  if (!el) return;
+
+  function resolveApi() {
+    if (typeof window !== 'undefined' && window.location && window.location.protocol.startsWith('http')) {
+      if ((window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && 
+          window.location.port !== '8000' && window.location.port !== '') {
+        return `http://${window.location.hostname}:8000/api`;
+      }
+      return `${window.location.origin}/api`;
+    }
+    return "http://127.0.0.1:8000/api";
+  }
+
+  const base = resolveApi();
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 3500);
+    const res = await fetch(`${base}/health`, { signal: controller.signal });
+    clearTimeout(timeoutId);
+
+    if (res.ok) {
+      el.innerHTML = `API Gateway: <strong style="color: var(--accent-success);">Online (Active)</strong>`;
+    } else {
+      el.innerHTML = `API Gateway: <strong style="color: var(--accent-warning);">Local Engine Mode</strong>`;
+    }
+  } catch (e) {
+    el.innerHTML = `API Gateway: <strong style="color: var(--accent-cyan);">Ready (Standalone)</strong>`;
+  }
+}
+
 // Initialize on DOM load
 document.addEventListener('DOMContentLoaded', () => {
   initTheme();
   initParticleCanvas();
   animateCounters();
+  checkApiGateway();
 });

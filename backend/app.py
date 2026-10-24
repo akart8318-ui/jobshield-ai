@@ -11,10 +11,16 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from typing import Optional
 
-from verifier import JobVerifierEngine
-from vision_extractor import VisionExtractor
-from osint_checker import OSINTChecker
-from blacklist_db import blacklist_db
+try:
+    from verifier import JobVerifierEngine
+    from vision_extractor import VisionExtractor
+    from osint_checker import OSINTChecker
+    from blacklist_db import blacklist_db
+except ImportError:
+    from backend.verifier import JobVerifierEngine
+    from backend.vision_extractor import VisionExtractor
+    from backend.osint_checker import OSINTChecker
+    from backend.blacklist_db import blacklist_db
 
 app = FastAPI(
     title="JobShield AI Enterprise Backend",
@@ -151,4 +157,5 @@ if os.path.exists(frontend_dir):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("app:app", host="127.0.0.1", port=8000, reload=True)
+    port = int(os.environ.get("PORT", 8000))
+    uvicorn.run("app:app", host="0.0.0.0", port=port, reload=True)

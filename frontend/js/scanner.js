@@ -2,9 +2,24 @@
  * JobShield AI - Omni-Scanner Controller
  * Connects frontend to the FastAPI backend with real-time SVG gauge,
  * laser scan animations, and 1-click cybercrime reporting.
+ * Supports cross-device cloud access (Render, mobile, local).
  */
 
-const BACKEND_API = "http://127.0.0.1:8000/api";
+function getApiBase() {
+  if (typeof window !== 'undefined' && window.location && window.location.protocol.startsWith('http')) {
+    // If running on dev server (e.g. Live Server on port 5500 / 3000) while backend is on 8000:
+    if ((window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && 
+        window.location.port !== '8000' && window.location.port !== '') {
+      return `http://${window.location.hostname}:8000/api`;
+    }
+    // Render cloud deployment, LAN IP, or served directly from FastAPI:
+    return `${window.location.origin}/api`;
+  }
+  // Local filesystem preview (file:///)
+  return "http://127.0.0.1:8000/api";
+}
+
+const BACKEND_API = getApiBase();
 let activeDossier = "";
 let uploadedScanFile = null;
 
@@ -106,21 +121,51 @@ function executeLocalAudit(text) {
   const flags = [];
   const passes = [];
 
-  const hasDeposit = /pay|deposit|registration|fee|kit|rs\.?\s*\d+/i.test(text);
-  const hasTask = /youtube|video|like|data entry|rating/i.test(text);
-  const hasTelegram = /telegram|@[a-zA-Z0-9_]+/i.test(text);
-  const hasLegit = /nextstep\.tcs\.com|tcs\.com/i.test(text);
+  const hasDeposit = /pay|deposit|registration|fee|kit|charge|cost|rs\.?\s*\d+/i.test(text);
+  const hasCredTheft = /otp|atm\s*pin|cvv|bank\s*password|netbanking|cheque/i.test(text);
+  const hasTrojan = /anydesk|teamviewer|rustdesk|quicksupport|\.apk/i.test(text);
+  const hasCrypto = /usdt|crypto|tron|trx|binance|prepaid\s*task/i.test(text);
+  const hasTask = /youtube|video|like|subscribe|rating|google\s*maps?|hotel\s*review|data entry|captcha/i.test(text);
+  const hasLegalThreat = /legal\s*notice|court|fir|penalty|breach\s*of\s*contract/i.test(text);
+  const hasTelegram = /telegram|@[a-zA-Z0-9_]+|t\.me/i.test(text);
+  const hasLegitPortal = /nextstep\.tcs\.com|tcs\.com|infosys\.com|wipro\.com|amazon\.jobs|careers\.google\.com|linkedin\.com|naukri\.com|internshala\.com/i.test(text);
+  const hasZeroFee = /no\s*(fee|charge)\s*is\s*charged|free\s*of\s*charge|zero\s*fee|never\s*ask\s*for\s*money/i.test(text);
+
+  if (hasCredTheft) {
+    score -= 55;
+    flags.push({
+      title: "Sensitive Banking Credential Demands",
+      description: "Demands OTP, ATM PIN, or banking passwords. Genuine employers never solicit private authentication credentials."
+    });
+  }
+
+  if (hasTrojan) {
+    score -= 55;
+    flags.push({
+      title: "Remote Desktop / Device Hijacking Vector",
+      description: "Directs applicant to install screen sharing tools (AnyDesk, TeamViewer) or APK files, enabling cybercriminals to seize control of devices."
+    });
+  }
+
+  if (hasCrypto) {
+    score -= 55;
+    flags.push({
+      title: "Cryptocurrency / Prepaid Task Ponzi Trap",
+      description: "Requires crypto deposits (USDT/TRX) to unlock work or withdraw commissions. High-risk financial cyber fraud."
+    });
+  }
 
   if (hasDeposit) {
     score -= 50;
     flags.push({
       title: "Upfront Monetary Extortion Detected",
-      description: "Demands registration, laptop deposit, or processing fee. Legitimate employers never charge money."
+      description: "Demands registration, laptop deposit, training, or kit fee. Legitimate employers never charge candidates money."
     });
-  } else {
+  } else if (hasZeroFee) {
+    score += 5;
     passes.push({
-      title: "Zero-Fee Policy Verified",
-      description: "No monetary demands or deposit fee traps detected."
+      title: "Transparent Zero-Fee Policy",
+      description: "Explicitly states recruitment is 100% free with no deposit traps."
     });
   }
 
@@ -128,7 +173,15 @@ function executeLocalAudit(text) {
     score -= 25;
     flags.push({
       title: "Social Media / Ponzi Task Scam Signature",
-      description: "Offers high daily wage (₹2,500 - ₹5,000) for casual YouTube/Telegram tasks."
+      description: "Offers high daily wage (₹2,500 - ₹5,000) for casual YouTube/Google Maps/Telegram review tasks."
+    });
+  }
+
+  if (hasLegalThreat) {
+    score -= 30;
+    flags.push({
+      title: "Coercive Legal Threat / Fake FIR Extortion",
+      description: "Uses fabricated court notices or police complaints to intimidate students into paying bogus penalty charges."
     });
   }
 
@@ -136,15 +189,15 @@ function executeLocalAudit(text) {
     score -= 15;
     flags.push({
       title: "Anonymous Messaging Redirection",
-      description: "Directs applicants to untraceable Telegram handles rather than corporate domains."
+      description: "Directs applicants to untraceable Telegram handles rather than verified enterprise domains."
     });
   }
 
-  if (hasLegit) {
-    score += 10;
+  if (hasLegitPortal) {
+    score += 15;
     passes.push({
-      title: "Verified Enterprise Gateway",
-      description: "Directs applicants to an authoritative corporate portal."
+      title: "Verified Enterprise Employment Gateway",
+      description: "Directs applicants to an authoritative corporate careers portal or job board."
     });
   }
 
@@ -155,22 +208,27 @@ function executeLocalAudit(text) {
   if (score >= 80) classification = "VERIFIED LEGITIMATE";
   else if (score >= 50) classification = "SUSPICIOUS - PROCEED WITH CAUTION";
 
+  // Entity extraction
+  const compMatch = text.match(/\b(TCS|Tata Consultancy Services|Infosys|Wipro|Amazon|Google|Microsoft|Deloitte|Cognizant|Accenture)\b/i);
+  const upiMatch = text.match(/[a-zA-Z0-9.\-_]+@(oksbi|okhdfcbank|okaxis|okicici|paytm|ybl|apl|upi)/i);
+  const phoneMatch = text.match(/(?:\+?91[\-\s]?)?[6-9]\d{4}[\-\s]?\d{5}/);
+
   return {
     trust_score: score,
     risk_score: risk_score,
     classification: classification,
     summary_verdict: score < 50 
       ? "DANGER: High probability of financial cyber fraud. Demands upfront funds or matches known scam patterns."
-      : "Verified recruitment circular with zero monetary extortion triggers.",
+      : (score >= 80 ? "Verified recruitment circular with zero monetary extortion triggers." : "Suspicious circular. Proceed with caution and do not pay any advance fees."),
     extracted_entities: {
-      company: text.includes("TCS") ? "Tata Consultancy Services" : "Unregistered Private Entity",
+      company: compMatch ? compMatch[0] : "Not Specified",
       demanded_amount: hasDeposit ? "₹499 - ₹850" : "None Detected",
-      phone: "+91 98765 43210",
-      upi_id: text.includes("quickwork") ? "quickwork@upi" : (text.includes("datawork") ? "datawork@oksbi" : "None")
+      phone: phoneMatch ? phoneMatch[0] : "Not Provided",
+      upi_id: upiMatch ? upiMatch[0] : "None Detected"
     },
     flags: flags,
     passes: passes,
-    police_dossier: `INCIDENT COMPLAINT DOSSIER • GENERATED BY JOBSHIELD AI\nTarget: ${classification} (${risk_score}% Risk)\nDemanded: ₹499\nSuspect: quickwork@upi\nRaw text: "${text.substring(0, 300)}..."\nReported for verification on cybercrime.gov.in / Dial 1930.`
+    police_dossier: `INCIDENT COMPLAINT DOSSIER • GENERATED BY JOBSHIELD AI\nTarget Assessment: ${classification} (${risk_score}% Risk)\nSuspect UPI: ${upiMatch ? upiMatch[0] : 'None'}\nDemanded: ${hasDeposit ? 'Upfront Fee' : 'None'}\nRaw text: "${text.substring(0, 300)}..."\nCitizen Emergency Protocol: Dial 1930 / File on cybercrime.gov.in.`
   };
 }
 
