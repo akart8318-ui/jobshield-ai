@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>JobShield AI — Autonomous Job Scam & Vacancy Verification Platform</title>
   <link rel="stylesheet" href="css/style.css">
+  <script src="js/i18n.js"></script>
 </head>
 <body>
 
@@ -12,18 +13,6 @@
   <canvas id="particleCanvas"></canvas>
 
   <div class="content-wrapper">
-    <!-- Civic 1930 Top Ribbon -->
-    <aside class="civic-ribbon">
-      <div class="container civic-ribbon-flex">
-        <div class="pulse-badge">
-          <span class="pulse-dot"></span>
-          <span>National Cyber Crime Emergency Protocol: <strong>Dial 1930 (Toll-Free, 24x7)</strong></span>
-        </div>
-        <a href="cybercrime.html" class="civic-link">
-          Citizen Reporting Portal Bridge (cybercrime.gov.in) ↗
-        </a>
-      </div>
-    </aside>
 
     <!-- Sticky Classic Site Header -->
     <header class="site-header">
@@ -39,16 +28,19 @@
         </a>
 
         <ul class="nav-menu">
-          <li><a href="index.html" class="nav-item-link active">Home</a></li>
-          <li><a href="scanner.html" class="nav-item-link">AI Scanner</a></li>
-          <li><a href="osint.html" class="nav-item-link">OSINT Auditor</a></li>
-          <li><a href="blacklist.html" class="nav-item-link">Scam Registry</a></li>
-          <li><a href="cybercrime.html" class="nav-item-link">Report 1930</a></li>
+          <li><a href="index.html" class="nav-item-link active" data-i18n="nav.home">Home</a></li>
+          <li><a href="scanner.html" class="nav-item-link" data-i18n="nav.scanner">AI Scanner</a></li>
+          <li><a href="osint.html" class="nav-item-link" data-i18n="nav.osint">OSINT Auditor</a></li>
+          <li><a href="blacklist.html" class="nav-item-link" data-i18n="nav.registry">Scam Registry</a></li>
+          <li><a href="cybercrime.html" class="nav-item-link" data-i18n="nav.report">Report 1930</a></li>
         </ul>
 
         <div class="header-actions">
+          <button id="langSwitchBtn" class="lang-switch-btn" onclick="toggleLanguage()" title="हिन्दी में बदलें">
+            <span class="lang-flag">🇮🇳</span><span class="lang-label">हिन्दी</span>
+          </button>
           <button id="themeToggleBtn" class="theme-switch-btn" onclick="toggleTheme()" title="Toggle Dark/Light Mode">🌙</button>
-          <a href="scanner.html" class="btn btn-primary">Launch Scanner</a>
+          <a href="scanner.html" class="btn btn-primary" data-i18n="nav.launch">Launch Scanner</a>
         </div>
       </div>
     </header>
@@ -57,40 +49,40 @@
     <main class="container">
       <section class="hero-wrapper">
         <div class="status-pill">
-          <span>Team PANDAV</span>
+          <span data-i18n="hero.badge">Team PANDAV</span>
         </div>
 
-        <h1 class="hero-heading">
-          Protecting Student Careers Against<br>Predatory Employment Fraud.
+        <h1 class="hero-heading" data-i18n="hero.heading">
+          Protecting Student Careers Against Predatory Employment Fraud.
         </h1>
 
-        <p class="hero-lead">
+        <p class="hero-lead" data-i18n="hero.lead">
           An autonomous multi-layer verification suite detecting upfront deposit traps, fake Telegram tasks, and unverified local vacancies before students commit time or money.
         </p>
 
         <div class="hero-actions">
-          <a href="scanner.html" class="btn btn-primary btn-lg">Launch Multi-Modal Scanner</a>
-          <a href="osint.html" class="btn btn-outline btn-lg">Inspect Domain & DNS</a>
-          <a href="cybercrime.html" class="btn btn-danger btn-lg">Report to Cyber Crime 1930</a>
+          <a href="scanner.html" class="btn btn-primary btn-lg" data-i18n="hero.btn.scanner">Launch Multi-Modal Scanner</a>
+          <a href="osint.html" class="btn btn-outline btn-lg" data-i18n="hero.btn.osint">Inspect Domain &amp; DNS</a>
+          <a href="cybercrime.html" class="btn btn-danger btn-lg" data-i18n="hero.btn.report">Report to Cyber Crime 1930</a>
         </div>
 
         <!-- Metrics Strip -->
         <div class="metrics-strip">
           <div class="metric-col">
             <span class="metric-val counter-val" data-target="1850" data-prefix="₹" data-suffix=" Cr+">0</span>
-            <span class="metric-sub">Annual Student Loss in India</span>
+            <span class="metric-sub" data-i18n="metric.loss">Annual Student Loss in India</span>
           </div>
           <div class="metric-col">
             <span class="metric-val counter-val" data-target="98" data-suffix=".4%">0</span>
-            <span class="metric-sub">Heuristic Detection Rate</span>
+            <span class="metric-sub" data-i18n="metric.detection">Heuristic Detection Rate</span>
           </div>
           <div class="metric-col">
             <span class="metric-val counter-val" data-target="12450" data-suffix="+">0</span>
-            <span class="metric-sub">Indexed Scam Handles & UPIs</span>
+            <span class="metric-sub" data-i18n="metric.handles">Indexed Scam Handles &amp; UPIs</span>
           </div>
           <div class="metric-col">
             <span class="metric-val counter-val" data-target="2" data-suffix=" Sec">0</span>
-            <span class="metric-sub">Mean Audit Response Time</span>
+            <span class="metric-sub" data-i18n="metric.response">Mean Audit Response Time</span>
           </div>
         </div>
       </section>
@@ -108,9 +100,7 @@
         <div class="cards-grid-2">
           <!-- Card 1: Omni-Scanner -->
           <div class="classic-card">
-            <div class="card-icon-box">📷</div>
-            <span class="module-tag">MODULE 1 & 2 • INGESTION & HEURISTICS</span>
-            <h3 class="card-head">Omni-Modal AI Scanner</h3>
+            <div class="card-icon-box">📷</div>            <h3 class="card-head">Omni-Modal AI Scanner</h3>
             <p class="card-paragraph">
               Inspect WhatsApp circulars, physical street flyers, and PDF offer letters. Gemini Vision OCR extracts entity metadata and immediately penalizes upfront deposit demands.
             </p>
@@ -119,9 +109,7 @@
 
           <!-- Card 2: OSINT Auditor -->
           <div class="classic-card">
-            <div class="card-icon-box" style="background: var(--accent-cyan-subtle); color: var(--accent-cyan);">🌐</div>
-            <span class="module-tag" style="color: var(--accent-cyan);">MODULE 3 • OSINT & GEO-AUDITOR</span>
-            <h3 class="card-head">OSINT & Domain Age Auditor</h3>
+            <div class="card-icon-box" style="background: var(--accent-cyan-subtle); color: var(--accent-cyan);">🌐</div>            <h3 class="card-head">OSINT & Domain Age Auditor</h3>
             <p class="card-paragraph">
               Queries live DNS & WHOIS data to catch newly registered scam domains (&lt;30 days old). Detects free email impersonations (@gmail claiming to be corporate HR) and audits local street coordinates.
             </p>
@@ -130,9 +118,7 @@
 
           <!-- Card 3: Scam Registry -->
           <div class="classic-card">
-            <div class="card-icon-box" style="background: var(--accent-warning-subtle); color: var(--accent-warning);">🔍</div>
-            <span class="module-tag" style="color: var(--accent-warning);">MODULE 6 • CROWDSOURCED REGISTRY</span>
-            <h3 class="card-head">National Scam Registry & Search</h3>
+            <div class="card-icon-box" style="background: var(--accent-warning-subtle); color: var(--accent-warning);">🔍</div>            <h3 class="card-head">National Scam Registry & Search</h3>
             <p class="card-paragraph">
               Real-time directory indexing thousands of reported scammer UPI IDs, WhatsApp numbers, Telegram recruiter handles, and fraudulent walk-in consultancies.
             </p>
@@ -141,9 +127,7 @@
 
           <!-- Card 4: Cybercrime Hub -->
           <div class="classic-card">
-            <div class="card-icon-box" style="background: var(--accent-danger-subtle); color: var(--accent-danger);">🏛️</div>
-            <span class="module-tag" style="color: var(--accent-danger);">MODULE 5 • CIVIC ENFORCEMENT</span>
-            <h3 class="card-head">1-Click Cybercrime 1930 Hub</h3>
+            <div class="card-icon-box" style="background: var(--accent-danger-subtle); color: var(--accent-danger);">🏛️</div>            <h3 class="card-head">National Scam Registry &amp; Search</h3>
             <p class="card-paragraph">
               Pre-formats official police complaint dossiers, copies evidence directly to your clipboard, and launches cybercrime.gov.in in one seamless step. Includes 1930 bank freeze guidance.
             </p>
@@ -291,14 +275,14 @@
         <!-- Footer Bottom Bar -->
         <div class="footer-bottom-bar">
           <div>
-            © 2026 <strong>JobShield AI</strong> • Engineered by Team PANDAV (5 Members) for College Hackathon 2026.
+            © 2026 <strong>JobShield AI</strong> • Engineered by Team <strong>PANDAV</strong>
           </div>
           <div style="display: flex; align-items: center; gap: 20px;">
             <span class="status-operational">
               <span class="status-circle-pulse"></span>
               All 6 Cyber Defense Modules Active
             </span>
-            <span id="apiGatewayStatus">API Gateway: <strong style="color: var(--accent-success);">Connecting...</strong></span>
+            <span id="apiGatewayStatus">API Gateway: <strong style="color: var(--accent-success, var(--success));">Connecting...</strong></span>
           </div>
         </div>
       </div>
@@ -306,5 +290,6 @@
   </div>
 
   <script src="js/main.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>

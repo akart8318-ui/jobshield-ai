@@ -29,11 +29,12 @@ const DEMO_PRESETS = {
 // ==========================================
 // 1. TAB NAVIGATION & PRESET MANAGEMENT
 // ==========================================
-function switchTab(tabId) {
+function switchTab(tabId, el) {
   document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
   document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));
 
-  event.currentTarget.classList.add('active');
+  // Use passed element reference instead of implicit global `event`
+  if (el) el.classList.add('active');
   const targetPane = document.getElementById(tabId);
   if (targetPane) targetPane.classList.add('active');
 
@@ -57,9 +58,12 @@ function loadPreset(presetKey) {
 }
 
 function clearInputs() {
-  document.getElementById('inputText').value = "";
-  document.getElementById('resultsSection').style.display = 'none';
-  document.getElementById('copySuccessMsg').style.display = 'none';
+  const inputText = document.getElementById('inputText');
+  if (inputText) inputText.value = "";
+  const resultsSec = document.getElementById('resultsSection');
+  if (resultsSec) resultsSec.style.display = 'none';
+  const copyMsg = document.getElementById('copySuccessMsg');
+  if (copyMsg) copyMsg.style.display = 'none';
 }
 
 // ==========================================
@@ -168,8 +172,8 @@ function executeClientFallbackAudit(text) {
 
   const hasDeposit = /pay|deposit|registration|fee|kit|rs\.?\s*\d+/i.test(text);
   const hasTask = /youtube|video|like|data entry|watch|rating/i.test(text);
-  const hasTelegram = /telegram|@[a-zA-Z0-9_]+/i.test(text);
-  const hasFreeEmail = /@gmail\.com|@yahoo\.com/i.test(text);
+  const hasTelegram = /(?<![a-zA-Z0-9._%+\-])@([a-zA-Z0-9_]{4,32})(?!\.[a-zA-Z]{2,})\b|t\.me\/[a-zA-Z0-9_]+/i.test(text);
+  const hasFreeEmail = /@gmail\.com|@yahoo\.com|@hotmail\.com|@outlook\.com/i.test(text);
   const hasLegitDomain = /nextstep\.tcs\.com|tcs\.com|infosys\.com/i.test(text);
 
   if (hasDeposit) {
@@ -198,6 +202,15 @@ function executeClientFallbackAudit(text) {
     flags.push({
       title: "Anonymous Telegram Routing",
       description: "Directs applicants to untraceable messaging handles rather than corporate portals."
+    });
+  }
+
+  // Bug #6 Fix: hasFreeEmail was computed but never used — now penalizes free email HR contacts
+  if (hasFreeEmail && !hasLegitDomain) {
+    score -= 15;
+    flags.push({
+      title: "Suspicious Free Email Domain Detected",
+      description: "Recruiter contact uses a free public email provider (@gmail/@yahoo). Legitimate corporate HR uses official company domains."
     });
   }
 
@@ -466,8 +479,11 @@ async function submitScamReport() {
 }
 
 function showLoading(show) {
-  document.getElementById('loadingState').style.display = show ? 'block' : 'none';
+  // Bug #10 Fix: null-check before accessing .style to avoid crash on pages without these elements
+  const loadingEl = document.getElementById('loadingState');
+  if (loadingEl) loadingEl.style.display = show ? 'block' : 'none';
   if (show) {
-    document.getElementById('resultsSection').style.display = 'none';
+    const resultsSec = document.getElementById('resultsSection');
+    if (resultsSec) resultsSec.style.display = 'none';
   }
 }

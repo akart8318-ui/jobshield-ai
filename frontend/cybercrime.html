@@ -5,24 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cybercrime 1930 Action Hub — JobShield AI</title>
   <link rel="stylesheet" href="css/style.css">
+  <script src="js/i18n.js"></script>
 </head>
 <body>
 
   <canvas id="particleCanvas"></canvas>
 
   <div class="content-wrapper">
-    <!-- Civic 1930 Top Ribbon -->
-    <aside class="civic-ribbon" style="background: var(--accent-danger-subtle); border-color: rgba(244, 63, 94, 0.25);">
-      <div class="container civic-ribbon-flex">
-        <div class="pulse-badge">
-          <span class="pulse-dot"></span>
-          <span>CRITICAL ACTION PROTOCOL: If funds were transferred, <strong>Dial 1930 Immediately</strong>.</span>
-        </div>
-        <a href="https://cybercrime.gov.in/home" target="_blank" rel="noopener noreferrer" class="civic-link" style="color: var(--accent-danger);">
-          National Reporting Portal (cybercrime.gov.in) ↗
-        </a>
-      </div>
-    </aside>
 
     <!-- Site Header -->
     <header class="site-header">
@@ -38,16 +27,19 @@
         </a>
 
         <ul class="nav-menu">
-          <li><a href="index.html" class="nav-item-link">Home</a></li>
-          <li><a href="scanner.html" class="nav-item-link">AI Scanner</a></li>
-          <li><a href="osint.html" class="nav-item-link">OSINT Auditor</a></li>
-          <li><a href="blacklist.html" class="nav-item-link">Scam Registry</a></li>
-          <li><a href="cybercrime.html" class="nav-item-link active">Report 1930</a></li>
+          <li><a href="index.html" class="nav-item-link" data-i18n="nav.home">Home</a></li>
+          <li><a href="scanner.html" class="nav-item-link" data-i18n="nav.scanner">AI Scanner</a></li>
+          <li><a href="osint.html" class="nav-item-link" data-i18n="nav.osint">OSINT Auditor</a></li>
+          <li><a href="blacklist.html" class="nav-item-link" data-i18n="nav.registry">Scam Registry</a></li>
+          <li><a href="cybercrime.html" class="nav-item-link active" data-i18n="nav.report">Report 1930</a></li>
         </ul>
 
         <div class="header-actions">
+          <button id="langSwitchBtn" class="lang-switch-btn" onclick="toggleLanguage()" title="हिन्दी में बदलें">
+            <span class="lang-flag">🇮🇳</span><span class="lang-label">हिन्दी</span>
+          </button>
           <button id="themeToggleBtn" class="theme-switch-btn" onclick="toggleTheme()" title="Toggle Dark/Light Mode">🌙</button>
-          <a href="scanner.html" class="btn btn-primary">Launch Scanner</a>
+          <a href="scanner.html" class="btn btn-primary" data-i18n="nav.launch">Launch Scanner</a>
         </div>
       </div>
     </header>
@@ -55,9 +47,7 @@
     <main class="container" style="padding: 3.5rem 0 2rem;">
       
       <!-- Suite Title -->
-      <div style="text-align: center; margin-bottom: 2.5rem;">
-        <span class="module-tag" style="color: var(--accent-danger);">MODULE 5 • CIVIC ENFORCEMENT & REPORTING</span>
-        <h1 style="font-size: 2.6rem; font-weight: 850; letter-spacing: -0.03em; margin-bottom: 0.5rem;">
+      <div style="text-align: center; margin-bottom: 2.5rem;">        <h1 style="font-size: 2.6rem; font-weight: 850; letter-spacing: -0.03em; margin-bottom: 0.5rem;">
           National Cyber Crime Reporting Bridge
         </h1>
         <p style="color: var(--text-secondary); max-width: 720px; margin: 0 auto 1.5rem; font-size: 0.95rem;">
@@ -217,7 +207,7 @@
 
         <div class="footer-bottom-bar">
           <div>
-            © 2026 <strong>JobShield AI</strong> • Engineered by Team PANDAV (5 Members) for College Hackathon 2026.
+            © 2026 <strong>JobShield AI</strong> • Engineered by Team <strong>PANDAV</strong>
           </div>
           <div style="display: flex; align-items: center; gap: 20px;">
             <span class="status-operational"><span class="status-circle-pulse"></span> All 6 Cyber Defense Modules Active</span>

@@ -8,6 +8,7 @@ crypto/USDT Ponzi tasks, fake review tasks, coercive legal intimidation, and spo
 import re
 from datetime import datetime
 from typing import Dict, Any, List
+
 try:
     from blacklist_db import blacklist_db
     from osint_checker import OSINTChecker, MAJOR_CORPORATES
@@ -16,13 +17,14 @@ except ImportError:
     from backend.osint_checker import OSINTChecker, MAJOR_CORPORATES
 
 class JobVerifierEngine:
-    # 1. Heuristic Patterns for Upfront Fee Extortion (Immediate Critical Penalty)
+    # 1. Heuristic Patterns for Upfront Fee Extortion (Demanded from applicant)
     FEE_PATTERNS = [
-        r"(registration|entry|exam|interview|form|application)\s*(fee|charge|cost|amount)",
-        r"(security|caution|refundable|mandatory)\s*(deposit|money|amount|fee)",
-        r"(laptop|kit|id\s*card|training|processing|courier|uniform|dispatch|documentation)\s*(charge|fee|deposit|cost|amount)",
-        r"(pay|send|transfer|deposit)\s*(?:rs\.?|inr|₹)?\s*(\d{2,5})",
-        r"(upi|gpay|phonepe|paytm)\s*(?:id|transfer|qr|payment|handle)"
+        r"(?:selected\s+)?(?:candidates?|applicants?|students?|interns?|freshers?|you|everyone)\s*(?:must|need\s*to|have\s*to|should)?\s*(?:pay|deposit|transfer|send|submit)\s*(?:rs\.?|inr|₹)?\s*(\d{2,5})",
+        r"(?:pay|deposit|transfer|send)\s*(?:rs\.?|inr|₹)?\s*(\d{2,5})\s*(?:as|for|towards|refundable)?\s*(?:registration|security|deposit|kit|processing|exam|form|interview|verification|caution|materials|id\s*card|charges)",
+        r"(?:registration|entry|exam|interview|form|application|processing|courier|uniform|kit|verification|documentation)\s*(?:fee|charge|cost|amount)\s*(?:is|of|:)?\s*(?:rs\.?|inr|₹)?\s*(\d{2,5})",
+        r"(?:security|caution|refundable|mandatory)\s*(?:deposit|money|amount|fee)\s*(?:is|of|:)?\s*(?:rs\.?|inr|₹)?\s*(\d{2,5})?",
+        r"(?:pay|transfer|send)\s*(?:to\s*)?(?:upi|gpay|phonepe|paytm|qr|account)",
+        r"(?:pay|send|transfer)\s*(?:rs\.?|inr|₹)?\s*(\d{2,5})\s*to\s*[a-zA-Z0-9.\-_]+@"
     ]
 
     # 2. Critical Financial Credential Harvesting (Severe Penalty)
@@ -69,12 +71,12 @@ class JobVerifierEngine:
         r"(breach\s*of\s*contract|agreement\s*violation|pay\s*penalty|recover\s*damages)"
     ]
 
-    # 8. Anonymous Contact Redirection
+    # 8. Anonymous Contact Redirection (excluding legitimate email addresses)
     ANONYMOUS_CHANNEL_PATTERNS = [
-        r"(@[a-zA-Z0-9_]{4,32})",                # Telegram handle
-        r"(t\.me\/[a-zA-Z0-9_]+)",                # Telegram invite link
-        r"(chat\.whatsapp\.com\/[a-zA-Z0-9]+)",    # WhatsApp group invite
-        r"(wa\.me\/\d+)"                          # WhatsApp direct click
+        r"(?<![a-zA-Z0-9._%+-])@([a-zA-Z0-9_]{4,32})(?!\.[a-zA-Z]{2,})\b",  # Standalone Telegram handle (not an email!)
+        r"(t\.me\/[a-zA-Z0-9_]+)",                                           # Telegram invite link
+        r"(chat\.whatsapp\.com\/[a-zA-Z0-9]+)",                               # WhatsApp group invite
+        r"(wa\.me\/\d+)"                                                     # WhatsApp direct click
     ]
 
     @classmethod
@@ -163,12 +165,24 @@ class JobVerifierEngine:
                 "description": "Requires cryptocurrency deposits (USDT/TRX) or prepaid recharge tasks to unlock payouts. This is a classic multi-tiered Ponzi fraud."
             })
 
-        # 6. RULE: UPFRONT FEE EXTORTION
+        # 6. RULE: UPFRONT FEE EXTORTION VS ZERO-FEE DISCLAIMERS
         fee_detected = False
-        for pattern in cls.FEE_PATTERNS:
-            if re.search(pattern, text_clean, re.IGNORECASE):
-                fee_detected = True
-                break
+        has_zero_fee_disclaimer = False
+        disclaimer_pattern = r'(?:does\s*not|do\s*not|never|no|not|neither)\s*(?:charge|demand|ask\s*for|require|collect|take)\s*(?:any\s*)?(?:fee|deposit|money|charge|cost|amount)|no\s*(?:fee|deposit|charge|money)\s*(?:is|will\s*be)?\s*(?:charged|demanded|asked|collected|required)|(?:beware|caution|warning|notice)\s*[:\-]?\s*(?:we|company|\w+)?\s*(?:does\s*not|never)\s*(?:charge|ask)'
+
+        sentences = re.split(r'[\.\n\r;!]+', text_clean)
+        for s in sentences:
+            s_clean = s.strip()
+            if not s_clean:
+                continue
+            if re.search(disclaimer_pattern, s_clean, re.IGNORECASE):
+                has_zero_fee_disclaimer = True
+                continue  # Disclaimers are fraud warnings, not demands!
+            
+            for pattern in cls.FEE_PATTERNS:
+                if re.search(pattern, s_clean, re.IGNORECASE):
+                    fee_detected = True
+                    break
 
         if fee_detected:
             score -= 50
@@ -178,14 +192,13 @@ class JobVerifierEngine:
                 "title": "Upfront Monetary Demand Detected",
                 "description": "Demands payment under the guise of registration, laptop security deposit, training kit, or courier charges. Legitimate employers NEVER charge applicants."
             })
-        else:
-            # Positive: Transparent Zero-Fee Policy
-            if re.search(r"no\s*(fee|charge|money)\s*is\s*charged|free\s*of\s*charge|never\s*ask\s*for\s*money|zero\s*fee", text_clean, re.IGNORECASE):
-                score += 5
-                passes.append({
-                    "title": "Transparent Zero-Fee Policy",
-                    "description": "Explicitly emphasizes that recruitment is 100% free of charge."
-                })
+
+        if has_zero_fee_disclaimer:
+            score += 10
+            passes.append({
+                "title": "Transparent Zero-Fee Security Notice",
+                "description": "Explicitly emphasizes that recruitment is 100% free of charge and warns against fraudulent fees."
+            })
 
         # 7. RULE: TASK SCAMS & UNREALISTIC WAGES
         task_detected = False
@@ -264,7 +277,6 @@ class JobVerifierEngine:
                     "description": email_audit.get("reason")
                 })
             else:
-                score += 5
                 passes.append({
                     "title": "Enterprise Corporate Email Verified",
                     "description": email_audit.get("reason")
@@ -289,13 +301,30 @@ class JobVerifierEngine:
                     "description": url_audit.get("reason")
                 })
 
-        # 13. RECOGNIZE AUTHENTIC ENTERPRISE PROCESSES
+        # 13. RECOGNIZE AUTHENTIC ENTERPRISE & SALARY DETAILS
         if extracted_entities.get("company") and extracted_entities["company"] != "Not Specified":
             if not fee_detected and not task_detected and not cred_theft_detected and not trojan_detected:
                 passes.append({
                     "title": f"Known Enterprise Entity: {extracted_entities['company']}",
                     "description": "Matches verified corporate employer directory with standard recruitment verbiage."
                 })
+
+        if extracted_entities.get("salary_offered"):
+            passes.append({
+                "title": f"Structured Compensation Specified ({extracted_entities['salary_offered']})",
+                "description": "Listing clearly specifies standard remuneration structure rather than arbitrary commissions."
+            })
+
+        # Check for structured interview rounds
+        if re.search(r"\b(\d+\s*rounds?|technical\s*interview|hr\s*round|assessment|screening|interview\s*process)\b", text_clean, re.IGNORECASE):
+            passes.append({
+                "title": "Multi-Stage Evaluation Process",
+                "description": "Requires formal candidate assessment and technical evaluation before offer issuance."
+            })
+
+        # Update Demanded Amount in Entities: If NO fee detected, set to 'None Detected'
+        if not fee_detected:
+            extracted_entities["demanded_amount"] = "None Detected"
 
         # Clamp Score between 5 and 100
         score = max(5, min(100, score))
@@ -343,7 +372,8 @@ class JobVerifierEngine:
             "upi_id": None,
             "telegram": None,
             "url": None,
-            "demanded_amount": None
+            "demanded_amount": "None Detected",
+            "salary_offered": None
         }
 
         # 1. Email extraction
@@ -356,33 +386,43 @@ class JobVerifierEngine:
         if phone_m:
             entities["phone"] = phone_m.group(0).strip()
 
-        # 3. UPI ID extraction (standard banking handles)
-        upi_pattern = r"[a-zA-Z0-9.\-_]+@(?:oksbi|okhdfcbank|okaxis|okicici|paytm|ybl|apl|upi|axl|ibl|barodampay|kotak|sbi|icici|hdfcbank|federal|idfcbank|freecharge)"
+        # 3. UPI ID extraction (excluding email domain suffixes)
+        upi_pattern = r"[a-zA-Z0-9.\-_]+@(?:oksbi|okhdfcbank|okaxis|okicici|paytm|ybl|apl|upi|axl|ibl|barodampay|kotak|sbi|icici|hdfcbank|federal|idfcbank|freecharge)(?!\.[a-zA-Z]{2,})\b"
         upi_m = re.search(upi_pattern, text, re.IGNORECASE)
         if upi_m:
             entities["upi_id"] = upi_m.group(0)
         else:
-            # Check for upi: handle format
-            upi_m2 = re.search(r"(?:upi|gpay|phonepe|paytm)\s*[:=\-]?\s*([a-zA-Z0-9.\-_]+@[a-zA-Z0-9.\-_]+)", text, re.IGNORECASE)
+            upi_m2 = re.search(r"(?:upi|gpay|phonepe|paytm)\s*[:=\-]?\s*([a-zA-Z0-9.\-_]+@[a-zA-Z0-9.\-_]+)(?!\.[a-zA-Z]{2,})", text, re.IGNORECASE)
             if upi_m2:
                 entities["upi_id"] = upi_m2.group(1)
 
-        # 4. Telegram handle / link
-        tg_m = re.search(r"@[a-zA-Z0-9_]{4,32}|t\.me\/[a-zA-Z0-9_]+", text)
+        # 4. Telegram handle / link (excluding email addresses)
+        tg_m = re.search(r"(?<![a-zA-Z0-9._%+-])@([a-zA-Z0-9_]{4,32})(?!\.[a-zA-Z]{2,})\b", text)
         if tg_m:
-            entities["telegram"] = tg_m.group(0)
+            entities["telegram"] = f"@{tg_m.group(1)}"
+        else:
+            tg_link_m = re.search(r"t\.me\/[a-zA-Z0-9_]+", text)
+            if tg_link_m:
+                entities["telegram"] = tg_link_m.group(0)
 
         # 5. URL extraction
         url_m = re.search(r"https?:\/\/[^\s]+", text)
         if url_m:
             entities["url"] = url_m.group(0)
 
-        # 6. Extracted Demanded Amount
-        amt_m = re.search(r"(?:rs\.?|inr|₹)\s*(\d{2,5})", text, re.IGNORECASE)
-        if amt_m:
-            entities["demanded_amount"] = f"₹{amt_m.group(1)}"
+        # 6. Extracted Extortion Fee (only if in fee context)
+        fee_m = re.search(r"(?:pay|deposit|transfer|send|charge|fee|cost|kit|caution|security)\s*(?:of|is|:)?\s*(?:rs\.?|inr|₹)?\s*(\d{2,5})|(?:rs\.?|inr|₹)\s*(\d{2,5})\s*(?:fee|charge|deposit|kit|cost)", text, re.IGNORECASE)
+        if fee_m:
+            amt = fee_m.group(1) or fee_m.group(2)
+            if amt:
+                entities["demanded_amount"] = f"₹{amt}"
 
-        # 7. Company Identification
+        # 7. Salary / Compensation extraction
+        salary_m = re.search(r"(?:salary|stipend|ctc|package|lpa|fixed\s*pay|compensation|pay\s*you|we\s*pay)\s*(?:of|is|:)?\s*(?:rs\.?|inr|₹)?\s*(\d{2,7}(?:,\d{2,3})*(?:\s*(?:lpa|per\s*month|monthly|per\s*annum|pm|pa))?)", text, re.IGNORECASE)
+        if salary_m:
+            entities["salary_offered"] = f"₹{salary_m.group(1)}"
+
+        # 8. Company Identification
         for comp in [
             "Tata Consultancy Services", "TCS", "Infosys", "Wipro", "Amazon", 
             "Cognizant", "HCL", "Accenture", "Google", "Microsoft", "Deloitte", 

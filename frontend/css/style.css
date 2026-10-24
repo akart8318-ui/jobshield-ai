@@ -256,6 +256,37 @@ body {
   transform: scale(1.05);
 }
 
+/* Language Switcher Button */
+.lang-switch-btn {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  height: 38px;
+  padding: 0 14px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.lang-switch-btn:hover {
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+  transform: scale(1.04);
+}
+.lang-switch-btn .lang-flag {
+  font-size: 1.05rem;
+  line-height: 1;
+}
+.lang-switch-btn .lang-label {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
 /* Fancy Classic Buttons */
 .btn {
   padding: 9px 20px;
@@ -635,4 +666,42 @@ textarea.form-control {
 }
 @media (max-width: 600px) {
   .footer-grid { grid-template-columns: 1fr; }
+}
+
+/* Scanner Laser & Drag State */
+@keyframes scanLaserPulse {
+  0% { transform: translateX(-100%); }
+  50% { transform: translateX(100%); }
+  100% { transform: translateX(250%); }
+}
+
+.dropzone-dragover {
+  border-color: var(--accent-primary) !important;
+  background: var(--accent-primary-subtle) !important;
+}
+
+/* ==========================================
+   Invalid Input Popup Modal Animations
+   ========================================== */
+@keyframes fadeInOverlay {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes slideUpPopup {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Validation modal card — themed for dark/light mode */
+#validationModal > div {
+  background: var(--bg-surface);
+  border-color: var(--border-strong);
+  color: var(--text-primary);
 }

@@ -14,11 +14,13 @@ from typing import Optional
 try:
     from verifier import JobVerifierEngine
     from vision_extractor import VisionExtractor
+    from pdf_extractor import PDFExtractor
     from osint_checker import OSINTChecker
     from blacklist_db import blacklist_db
 except ImportError:
     from backend.verifier import JobVerifierEngine
     from backend.vision_extractor import VisionExtractor
+    from backend.pdf_extractor import PDFExtractor
     from backend.osint_checker import OSINTChecker
     from backend.blacklist_db import blacklist_db
 
@@ -32,7 +34,9 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_credentials=True,
+    # Bug #7 Fix: allow_credentials=True with allow_origins=["*"] is rejected by all modern browsers.
+    # Either restrict origins or disable credential passing. Using False for open API compatibility.
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -94,6 +98,22 @@ async def verify_image(file: UploadFile = File(...)):
         return analysis
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to process image: {str(e)}")
+
+@app.post("/api/verify-pdf")
+async def verify_pdf(file: UploadFile = File(...)):
+    """
+    Module 1: PDF offer letter ingestion, text extraction, followed by security audit.
+    """
+    try:
+        contents = await file.read()
+        extracted_text, metadata = PDFExtractor.extract_from_bytes(contents, file.filename or "")
+        analysis = JobVerifierEngine.analyze(extracted_text)
+        analysis["raw_extracted_text"] = extracted_text
+        analysis["filename"] = file.filename
+        analysis["pdf_metadata"] = metadata
+        return analysis
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to process PDF: {str(e)}")
 
 @app.post("/api/audit-domain")
 def audit_domain(payload: AuditDomainRequest):

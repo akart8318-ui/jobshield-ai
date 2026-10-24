@@ -159,12 +159,13 @@ async function checkApiGateway() {
     clearTimeout(timeoutId);
 
     if (res.ok) {
-      el.innerHTML = `API Gateway: <strong style="color: var(--accent-success);">Online (Active)</strong>`;
+      // Bug #8 Fix: Use CSS vars matching style.css (--success/warning/cyan, not --accent-*)
+      el.innerHTML = `API Gateway: <strong style="color: var(--success);">Online (Active)</strong>`;
     } else {
-      el.innerHTML = `API Gateway: <strong style="color: var(--accent-warning);">Local Engine Mode</strong>`;
+      el.innerHTML = `API Gateway: <strong style="color: var(--warning);">Local Engine Mode</strong>`;
     }
   } catch (e) {
-    el.innerHTML = `API Gateway: <strong style="color: var(--accent-cyan);">Ready (Standalone)</strong>`;
+    el.innerHTML = `API Gateway: <strong style="color: var(--cyan);">Ready (Standalone)</strong>`;
   }
 }
 
@@ -174,4 +175,5 @@ document.addEventListener('DOMContentLoaded', () => {
   initParticleCanvas();
   animateCounters();
   checkApiGateway();
+  if (typeof initLanguage === 'function') initLanguage();
 });

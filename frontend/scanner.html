@@ -5,22 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Omni-Modal AI Scanner — JobShield AI</title>
   <link rel="stylesheet" href="css/style.css">
+  <script src="js/i18n.js"></script>
 </head>
 <body>
 
   <canvas id="particleCanvas"></canvas>
 
   <div class="content-wrapper">
-    <!-- Civic 1930 Top Ribbon -->
-    <aside class="civic-ribbon">
-      <div class="container civic-ribbon-flex">
-        <div class="pulse-badge">
-          <span class="pulse-dot"></span>
-          <span>Helpline 1930 Active • National Financial Fraud Freeze Protocol</span>
-        </div>
-        <a href="cybercrime.html" class="civic-link">Filing on cybercrime.gov.in ↗</a>
-      </div>
-    </aside>
 
     <!-- Site Header -->
     <header class="site-header">
@@ -36,16 +27,19 @@
         </a>
 
         <ul class="nav-menu">
-          <li><a href="index.html" class="nav-item-link">Home</a></li>
-          <li><a href="scanner.html" class="nav-item-link active">AI Scanner</a></li>
-          <li><a href="osint.html" class="nav-item-link">OSINT Auditor</a></li>
-          <li><a href="blacklist.html" class="nav-item-link">Scam Registry</a></li>
-          <li><a href="cybercrime.html" class="nav-item-link">Report 1930</a></li>
+          <li><a href="index.html" class="nav-item-link" data-i18n="nav.home">Home</a></li>
+          <li><a href="scanner.html" class="nav-item-link active" data-i18n="nav.scanner">AI Scanner</a></li>
+          <li><a href="osint.html" class="nav-item-link" data-i18n="nav.osint">OSINT Auditor</a></li>
+          <li><a href="blacklist.html" class="nav-item-link" data-i18n="nav.registry">Scam Registry</a></li>
+          <li><a href="cybercrime.html" class="nav-item-link" data-i18n="nav.report">Report 1930</a></li>
         </ul>
 
         <div class="header-actions">
+          <button id="langSwitchBtn" class="lang-switch-btn" onclick="toggleLanguage()" title="हिन्दी में बदलें">
+            <span class="lang-flag">🇮🇳</span><span class="lang-label">हिन्दी</span>
+          </button>
           <button id="themeToggleBtn" class="theme-switch-btn" onclick="toggleTheme()" title="Toggle Dark/Light Mode">🌙</button>
-          <a href="cybercrime.html" class="btn btn-danger">🚨 Report 1930</a>
+          <a href="cybercrime.html" class="btn btn-danger" data-i18n="nav.report">🚨 Report 1930</a>
         </div>
       </div>
     </header>
@@ -53,20 +47,32 @@
     <main class="container" style="padding: 3.5rem 0 2rem;">
       
       <!-- Suite Title -->
-      <div style="text-align: center; margin-bottom: 2.2rem;">
-        <span class="module-tag">MODULE 1 & 2 • MULTI-MODAL INGESTION</span>
-        <h1 style="font-size: 2.6rem; font-weight: 850; letter-spacing: -0.03em; margin-bottom: 0.5rem;">
+      <div style="text-align: center; margin-bottom: 2.2rem;">        <h1 style="font-size: 2.6rem; font-weight: 850; letter-spacing: -0.03em; margin-bottom: 0.5rem;">
           Omni-Modal Threat Scanner & Heuristics
         </h1>
         <p style="color: var(--text-secondary); max-width: 680px; margin: 0 auto 1.5rem; font-size: 0.95rem;">
           Ingest raw WhatsApp circulars, street posters, or PDF appointment letters. Our backend pipeline extracts metadata and detects upfront extortion triggers.
         </p>
 
-        <!-- Presets Row -->
-        <div style="display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
-          <button class="btn btn-outline" onclick="loadScanPreset('telegram_scam')">🔴 Test: Telegram Task Scam (₹499 Deposit)</button>
-          <button class="btn btn-outline" onclick="loadScanPreset('data_entry_scam')">🟡 Test: Data Entry Fee Scam (₹850)</button>
-          <button class="btn btn-outline" onclick="loadScanPreset('tcs_campus')">🟢 Test: Authentic TCS Campus Drive</button>
+        <!-- Presets Row: Multi-Vector Threat & Vacancy Library -->
+        <div style="display: flex; justify-content: center; gap: 8px; flex-wrap: wrap;">
+          <button class="btn btn-outline" onclick="loadScanPreset('telegram_scam')" data-i18n="scanner.preset.telegram">🔴 Telegram YouTube Task (₹499)</button>
+          <button class="btn btn-outline" onclick="loadScanPreset('anydesk_scam')" data-i18n="scanner.preset.anydesk">🔴 AnyDesk Screen Hijack</button>
+          <button class="btn btn-outline" onclick="loadScanPreset('crypto_scam')" data-i18n="scanner.preset.crypto">🔴 Crypto USDT Ponzi Task</button>
+          <button class="btn btn-outline" onclick="loadScanPreset('data_entry_scam')" data-i18n="scanner.preset.data">🟡 Data Entry Fee &amp; FIR Threat (₹850)</button>
+          <button class="btn btn-outline" onclick="loadScanPreset('tcs_campus')" data-i18n="scanner.preset.tcs">🟢 Official TCS Campus Drive (100%)</button>
+          <button class="btn btn-outline" onclick="loadScanPreset('normal_dev')" data-i18n="scanner.preset.dev">🟢 Software Engineer Opening (₹40k Salary)</button>
+        </div>
+      </div>
+
+      <!-- Real-Time Scanner Progress Animation -->
+      <div id="scanProgressContainer" style="display: none; margin-bottom: 2rem; background: var(--bg-surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; text-align: center;">
+        <div style="display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 12px;">
+          <div class="status-circle-pulse" style="width: 10px; height: 10px; background: var(--accent-primary);"></div>
+          <strong id="scanProgressStatusText" style="font-size: 1.05rem; letter-spacing: -0.01em;">Running Deep Heuristic & Multi-Modal Pipeline...</strong>
+        </div>
+        <div style="width: 100%; max-width: 480px; height: 6px; background: var(--border); border-radius: 999px; margin: 0 auto; overflow: hidden; position: relative;">
+          <div id="scanProgressBar" style="height: 100%; width: 45%; background: linear-gradient(90deg, var(--accent-primary), var(--accent-cyan)); border-radius: 999px; animation: scanLaserPulse 1.2s infinite ease-in-out;"></div>
         </div>
       </div>
 
@@ -75,30 +81,34 @@
         
         <!-- Tab Selector -->
         <div style="display: flex; gap: 10px; border-bottom: 1px solid var(--border); padding-bottom: 14px; margin-bottom: 1.5rem;">
-          <button class="btn btn-primary" id="btnTabText" onclick="switchScanTab('text')">💬 Message Text</button>
-          <button class="btn btn-outline" id="btnTabImage" onclick="switchScanTab('image')">📷 Street Poster OCR</button>
-          <button class="btn btn-outline" id="btnTabPdf" onclick="switchScanTab('pdf')">📄 Offer Letter PDF</button>
+          <button class="btn btn-primary" id="btnTabText" onclick="switchScanTab('text')" data-i18n="scanner.tab.text">💬 Message Text</button>
+          <button class="btn btn-outline" id="btnTabImage" onclick="switchScanTab('image')" data-i18n="scanner.tab.image">📷 Street Poster OCR</button>
+          <button class="btn btn-outline" id="btnTabPdf" onclick="switchScanTab('pdf')" data-i18n="scanner.tab.pdf">📄 Offer Letter PDF</button>
         </div>
 
         <!-- Scan Tab 1: Text -->
         <div id="scanTabContentText">
-          <label style="display: block; font-weight: 700; margin-bottom: 8px; font-size: 0.9rem; color: var(--text-primary);">
+          <label style="display: block; font-weight: 700; margin-bottom: 8px; font-size: 0.9rem; color: var(--text-primary);" data-i18n="scanner.text.label">
             Paste Job Message / Circular Text:
           </label>
-          <textarea id="scanInputText" class="form-control" placeholder="e.g. 'URGENT: Part-time job for students. Watch 5 YouTube videos, earn Rs. 3,000 daily. Pay Rs. 499 security deposit to UPI: quickwork@upi...'"></textarea>
+          <textarea id="scanInputText" class="form-control" data-i18n="scanner.text.placeholder" data-i18n-attr="placeholder" placeholder="e.g. 'URGENT: Part-time job for students...'"></textarea>
           <div style="display: flex; gap: 12px; margin-top: 1.2rem;">
-            <button class="btn btn-primary btn-lg" onclick="triggerScan()">⚡ Execute Security Audit (Connected to Backend)</button>
-            <button class="btn btn-outline" onclick="document.getElementById('scanInputText').value = ''">Clear</button>
+            <button class="btn btn-primary btn-lg" id="btnAuditText" onclick="triggerScan()" data-i18n="scanner.text.btn">⚡ Execute Security Audit (Connected to Backend)</button>
+            <button class="btn btn-outline" onclick="document.getElementById('scanInputText').value = ''" data-i18n="scanner.text.clear">Clear</button>
           </div>
         </div>
 
         <!-- Scan Tab 2: Image / Poster OCR -->
         <div id="scanTabContentImage" style="display: none;">
-          <div style="border: 2px dashed var(--border); border-radius: 12px; padding: 3rem 1.5rem; text-align: center; background: var(--bg-surface-elevated); cursor: pointer;" onclick="document.getElementById('imageFileInput').click()">
+          <div id="imageDropZone" style="border: 2px dashed var(--border); border-radius: 12px; padding: 3rem 1.5rem; text-align: center; background: var(--bg-surface-elevated); cursor: pointer; transition: all 0.2s ease;" 
+               onclick="document.getElementById('imageFileInput').click()"
+               ondragover="handleDragOver(event, 'imageDropZone')"
+               ondragleave="handleDragLeave(event, 'imageDropZone')"
+               ondrop="handleImageDrop(event)">
             <div style="font-size: 2.8rem; margin-bottom: 10px;">📷</div>
-            <div style="font-weight: 800; font-size: 1.15rem;">Drag & drop photo of street flyer or screenshot</div>
-            <div style="color: var(--text-muted); font-size: 0.85rem; margin-top: 4px;">
-              Supports JPG, PNG (Max 10MB) • Multimodal Gemini Vision Extraction
+            <div style="font-weight: 800; font-size: 1.15rem;" data-i18n="scanner.img.dropTitle">Drag &amp; drop photo of street flyer or screenshot</div>
+            <div style="color: var(--text-muted); font-size: 0.85rem; margin-top: 4px;" data-i18n="scanner.img.dropSub">
+              Supports JPG, PNG (Max 10MB) • Multimodal Gemini Vision &amp; Heuristic Extraction
             </div>
             <input type="file" id="imageFileInput" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
           </div>
@@ -106,19 +116,23 @@
           <div id="imageSelectedCard" style="display: none; align-items: center; justify-content: space-between; background: var(--bg-surface-elevated); border: 1px solid var(--border); border-radius: 10px; padding: 12px 18px; margin-top: 1rem;">
             <div>
               <strong id="imgUploadName">poster.jpg</strong>
-              <div style="font-size: 0.78rem; color: var(--accent-cyan);">Ready for Vision OCR extraction</div>
+              <div style="font-size: 0.78rem; color: var(--accent-cyan);" data-i18n="scanner.img.ready">Ready for Vision OCR extraction</div>
             </div>
-            <button class="btn btn-primary" onclick="triggerImageScan()">Run Vision OCR Audit</button>
+            <button class="btn btn-primary" id="btnAuditImage" onclick="triggerImageScan()" data-i18n="scanner.img.btn">Run Vision OCR Audit</button>
           </div>
         </div>
 
         <!-- Scan Tab 3: PDF Offer Letter -->
         <div id="scanTabContentPdf" style="display: none;">
-          <div style="border: 2px dashed var(--border); border-radius: 12px; padding: 3rem 1.5rem; text-align: center; background: var(--bg-surface-elevated); cursor: pointer;" onclick="document.getElementById('pdfFileInput').click()">
+          <div id="pdfDropZone" style="border: 2px dashed var(--border); border-radius: 12px; padding: 3rem 1.5rem; text-align: center; background: var(--bg-surface-elevated); cursor: pointer; transition: all 0.2s ease;" 
+               onclick="document.getElementById('pdfFileInput').click()"
+               ondragover="handleDragOver(event, 'pdfDropZone')"
+               ondragleave="handleDragLeave(event, 'pdfDropZone')"
+               ondrop="handlePdfDrop(event)">
             <div style="font-size: 2.8rem; margin-bottom: 10px;">📄</div>
-            <div style="font-weight: 800; font-size: 1.15rem;">Upload Appointment Letter or PDF Circular</div>
-            <div style="color: var(--text-muted); font-size: 0.85rem; margin-top: 4px;">
-              Audits corporate CIN/DIN, HR signatures, and payment clause extortion
+            <div style="font-weight: 800; font-size: 1.15rem;" data-i18n="scanner.pdf.dropTitle">Upload Appointment Letter or PDF Circular</div>
+            <div style="color: var(--text-muted); font-size: 0.85rem; margin-top: 4px;" data-i18n="scanner.pdf.dropSub">
+              Audits corporate CIN/DIN, HR signatures, and payment clause extortion with PyPDF
             </div>
             <input type="file" id="pdfFileInput" accept=".pdf" style="display: none;" onchange="handlePdfUpload(event)">
           </div>
@@ -126,9 +140,9 @@
           <div id="pdfSelectedCard" style="display: none; align-items: center; justify-content: space-between; background: var(--bg-surface-elevated); border: 1px solid var(--border); border-radius: 10px; padding: 12px 18px; margin-top: 1rem;">
             <div>
               <strong id="pdfUploadName">offer_letter.pdf</strong>
-              <div style="font-size: 0.78rem; color: var(--accent-primary);">Document pre-processed</div>
+              <div style="font-size: 0.78rem; color: var(--accent-primary);" data-i18n="scanner.pdf.ready">Document pre-processed</div>
             </div>
-            <button class="btn btn-primary" onclick="triggerPdfScan()">Audit PDF Document</button>
+            <button class="btn btn-primary" id="btnAuditPdf" onclick="triggerPdfScan()" data-i18n="scanner.pdf.btn">Audit PDF Document</button>
           </div>
         </div>
 
@@ -159,12 +173,16 @@
           <div class="classic-card">
             <span class="module-tag">EXTRACTED ENTITIES & SUMMARY</span>
             <h3 id="txtHeadlineVerdict" style="font-size: 1.4rem; font-weight: 800; margin-bottom: 0.4rem;">Evaluation Details</h3>
-            <p id="txtSummaryVerdict" style="color: var(--text-secondary); font-size: 0.92rem; margin-bottom: 1.5rem;">Summary will appear here.</p>
+            <p id="txtSummaryVerdict" style="color: var(--text-secondary); font-size: 0.92rem; margin-bottom: 1.2rem;">Summary will appear here.</p>
 
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; background: var(--bg-surface-elevated); border: 1px solid var(--border); border-radius: 10px; padding: 14px;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; background: var(--bg-surface-elevated); border: 1px solid var(--border); border-radius: 10px; padding: 14px;">
               <div>
                 <span style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Claimed Entity:</span>
                 <div id="entCompany" style="font-weight: 700; font-size: 0.92rem;">-</div>
+              </div>
+              <div>
+                <span style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Stipend / Salary:</span>
+                <div id="entSalary" style="font-weight: 700; font-size: 0.92rem; color: var(--accent-success);">-</div>
               </div>
               <div>
                 <span style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Upfront Fee Demand:</span>
@@ -174,13 +192,25 @@
                 <span style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Payment UPI Handle:</span>
                 <div id="entUpi" style="font-weight: 700; font-size: 0.92rem;">-</div>
               </div>
-              <div>
-                <span style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Contact Handle:</span>
+              <div style="grid-column: span 2;">
+                <span style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Contact / Routing:</span>
                 <div id="entContact" style="font-weight: 700; font-size: 0.92rem;">-</div>
               </div>
             </div>
           </div>
 
+        </div>
+
+        <!-- Extracted Document Content Card (Visible when OCR or PDF text is extracted) -->
+        <div id="cardExtractedDocument" class="classic-card" style="display: none; margin-bottom: 2rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span class="module-tag" style="margin-bottom: 0; color: var(--accent-cyan);">OCR / DOCUMENT INGESTION</span>
+              <strong style="font-size: 1.05rem;" id="txtExtractedDocTitle">Extracted Document Text</strong>
+            </div>
+            <span id="badgeDocFilename" style="font-size: 0.75rem; background: var(--bg-surface-elevated); border: 1px solid var(--border); padding: 3px 8px; border-radius: 6px; color: var(--text-secondary);">-</span>
+          </div>
+          <div id="txtExtractedDocumentContent" style="background: var(--bg-surface-elevated); border: 1px solid var(--border); border-radius: 8px; padding: 14px; font-size: 0.86rem; line-height: 1.6; max-height: 220px; overflow-y: auto; white-space: pre-wrap; color: var(--text-primary); font-family: monospace;">-</div>
         </div>
 
         <!-- Proof Points List -->
@@ -223,6 +253,59 @@
       </div>
 
     </main>
+
+    <!-- ===== Custom Validation Popup Modal ===== -->
+    <div id="validationModal" style="
+        display: none; position: fixed; inset: 0; z-index: 9999;
+        background: rgba(0,0,0,0.55); backdrop-filter: blur(4px);
+        align-items: center; justify-content: center;
+        animation: fadeInOverlay 0.2s ease;">
+      <div style="
+          background: var(--bg-card, #1a1f2e); border: 1px solid var(--border, rgba(255,255,255,0.1));
+          border-radius: 18px; padding: 2rem 2.2rem; max-width: 420px; width: 90%;
+          box-shadow: 0 24px 60px rgba(0,0,0,0.5);
+          animation: slideUpPopup 0.25s cubic-bezier(0.34,1.56,0.64,1);">
+        <!-- Icon + Title -->
+        <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 1rem;">
+          <div id="validationModalIcon" style="
+              width: 48px; height: 48px; border-radius: 12px; flex-shrink: 0;
+              display: flex; align-items: center; justify-content: center;
+              font-size: 1.5rem; background: rgba(239,68,68,0.15);">⚠️</div>
+          <div>
+            <div id="validationModalTitle" style="font-weight: 800; font-size: 1.05rem; color: var(--text-primary, #f0f4ff);">
+              Invalid Input
+            </div>
+            <div style="font-size: 0.78rem; color: var(--text-muted, #7c8db0); margin-top: 2px;" data-i18n="modal.subtitle">
+              Please correct the issue below
+            </div>
+          </div>
+        </div>
+        <!-- Message -->
+        <p id="validationModalMessage" style="
+            font-size: 0.92rem; color: var(--text-secondary, #a8b4cc);
+            line-height: 1.6; margin-bottom: 1.4rem;
+            padding: 12px 14px; border-radius: 10px;
+            background: rgba(239,68,68,0.07); border-left: 3px solid #ef4444;">
+        </p>
+        <!-- Tip -->
+        <div id="validationModalTip" style="
+            font-size: 0.8rem; color: var(--text-muted, #7c8db0);
+            margin-bottom: 1.4rem; display: flex; gap: 8px; align-items: flex-start;">
+          <span style="flex-shrink:0;">💡</span>
+          <span id="validationModalTipText"></span>
+        </div>
+        <!-- Close Button -->
+        <button onclick="closeValidationModal()" style="
+            width: 100%; padding: 11px; border-radius: 10px; border: none; cursor: pointer;
+            background: linear-gradient(135deg, var(--accent-primary, #6366f1), var(--accent-cyan, #06b6d4));
+            color: #fff; font-weight: 700; font-size: 0.95rem;
+            transition: opacity 0.2s; letter-spacing: 0.01em;"
+            onmouseover="this.style.opacity='0.88'" onmouseout="this.style.opacity='1'"
+            data-i18n="modal.closeBtn">
+          Got it, I'll fix it
+        </button>
+      </div>
+    </div>
 
     <!-- Comprehensive Footer -->
     <footer class="site-footer">
@@ -285,7 +368,7 @@
 
         <div class="footer-bottom-bar">
           <div>
-            © 2026 <strong>JobShield AI</strong> • Engineered by Team PANDAV (5 Members) for College Hackathon 2026.
+            © 2026 <strong>JobShield AI</strong> • Engineered by Team <strong>PANDAV</strong>
           </div>
           <div style="display: flex; align-items: center; gap: 20px;">
             <span class="status-operational"><span class="status-circle-pulse"></span> All 6 Cyber Defense Modules Active</span>
